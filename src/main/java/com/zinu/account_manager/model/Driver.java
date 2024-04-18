@@ -1,11 +1,16 @@
 package com.zinu.account_manager.model;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,17 +23,10 @@ public class Driver {
     private String email;
     private String phoneNumber;
     private Date createdAt;
-
-    public Driver() {
-    }
-
-    public Driver(long id, String name, String email, String phoneNumber, Date createdAt) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.createdAt = createdAt;
-    }
+    @OneToMany(mappedBy = "driver", cascade = CascadeType.PERSIST)
+    private List<Cab> cabs = new ArrayList<>();
+    private Double currentLatitude;
+    private Double currentLongitude;
 
     public long getId() {
         return id;
@@ -70,13 +68,46 @@ public class Driver {
         this.createdAt = createdAt;
     }
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date(System.currentTimeMillis());
+    }
+
+    public List<Cab> getCabs() {
+        return cabs;
+    }
+
+    public void setCabs(List<Cab> cabs) {
+        this.cabs = cabs;
+    }
+
+    public Double getCurrentLatitude() {
+        return currentLatitude;
+    }
+
+    public void setCurrentLatitude(Double currentLatitude) {
+        this.currentLatitude = currentLatitude;
+    }
+
+    public Double getCurrentLongitude() {
+        return currentLongitude;
+    }
+
+    public void setCurrentLongitude(Double currentLongitude) {
+        this.currentLongitude = currentLongitude;
+    }
+
     @Override
     public String toString() {
         return "Driver [id=" + id + ", name=" + name + ", email=" + email + ", phoneNumber=" + phoneNumber
-                + ", createdAt=" + createdAt + ", getId()=" + getId() + ", getName()=" + getName() + ", getEmail()="
-                + getEmail() + ", getPhoneNumber()=" + getPhoneNumber() + ", getCreatedAt()=" + getCreatedAt()
-                + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
-                + "]";
+                + ", createdAt=" + createdAt + ", cabs=" + cabs + ", currentLatitude=" + currentLatitude
+                + ", currentLongitude=" + currentLongitude + ", getId()=" + getId() + ", getName()=" + getName()
+                + ", getEmail()=" + getEmail() + ", getPhoneNumber()=" + getPhoneNumber() + ", getCreatedAt()="
+                + getCreatedAt() + ", getCabs()=" + getCabs() + ", getCurrentLatitude()=" + getCurrentLatitude()
+                + ", getCurrentLongitude()=" + getCurrentLongitude() + ", getClass()=" + getClass() + ", hashCode()="
+                + hashCode() + ", toString()=" + super.toString() + "]";
     }
+
+    
 
 }
