@@ -27,6 +27,7 @@ public class Driver {
     private List<Cab> cabs = new ArrayList<>();
     private Double currentLatitude;
     private Double currentLongitude;
+    private String segmentId;
 
     public long getId() {
         return id;
@@ -97,16 +98,27 @@ public class Driver {
         this.currentLongitude = currentLongitude;
     }
 
+    public String getSegmentId() {
+        return segmentId;
+    }
+
+    public void setSegmentId(String segmentId) {
+        this.segmentId = segmentId;
+    }
+
     @Override
     public String toString() {
         return "Driver [id=" + id + ", name=" + name + ", email=" + email + ", phoneNumber=" + phoneNumber
                 + ", createdAt=" + createdAt + ", cabs=" + cabs + ", currentLatitude=" + currentLatitude
-                + ", currentLongitude=" + currentLongitude + ", getId()=" + getId() + ", getName()=" + getName()
-                + ", getEmail()=" + getEmail() + ", getPhoneNumber()=" + getPhoneNumber() + ", getCreatedAt()="
-                + getCreatedAt() + ", getCabs()=" + getCabs() + ", getCurrentLatitude()=" + getCurrentLatitude()
-                + ", getCurrentLongitude()=" + getCurrentLongitude() + ", getClass()=" + getClass() + ", hashCode()="
-                + hashCode() + ", toString()=" + super.toString() + "]";
+                + ", currentLongitude=" + currentLongitude + ", segmentId=" + segmentId + ", getId()=" + getId()
+                + ", getName()=" + getName() + ", getEmail()=" + getEmail() + ", getPhoneNumber()=" + getPhoneNumber()
+                + ", getCreatedAt()=" + getCreatedAt() + ", getCabs()=" + getCabs() + ", getCurrentLatitude()="
+                + getCurrentLatitude() + ", getCurrentLongitude()=" + getCurrentLongitude() + ", getSegmentId()="
+                + getSegmentId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
+                + super.toString() + "]";
     }
+
+    
 
     
 

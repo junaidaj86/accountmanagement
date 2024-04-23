@@ -10,5 +10,6 @@ public interface DriverService {
     Driver getDriverById(Long id);
     List<Driver> getAllDrivers();
     void deleteDriverById(Long id);
-    Driver updateDriverCurrentLocation(UpdateDriverLocationRequest location);
+    Driver updateDriver(Driver driver);
+    public Driver updateDriverLocation(UpdateDriverLocationRequest request);
 }
