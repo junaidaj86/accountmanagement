@@ -1,6 +1,7 @@
 package com.zinu.account_manager.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +24,13 @@ public class DriverServiceImpl implements DriverService {
 
     private RestService restService;
 
-    public DriverServiceImpl(DriverRepository driverRepository, KafkaService kafkaService, RestService restService) {
+    private RedisTemplate<String, Object> redisTemplate;
+
+    public DriverServiceImpl(DriverRepository driverRepository, KafkaService kafkaService, RestService restService, RedisTemplate<String, Object> redisTemplate) {
         this.driverRepository = driverRepository;
         this.kafkaService = kafkaService;
         this.restService = restService;
+        this.redisTemplate = redisTemplate;
     }
 
     @Value("${geohash.service.uri}")
@@ -40,13 +44,24 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Driver saveDriver(Driver driver) {
+        String key = "driver:" + driver.getId();
+        redisTemplate.opsForValue().set(key, driver);
         return driverRepository.save(driver);
     }
 
     @Override
     public Driver getDriverById(Long id) {
-        Optional<Driver> optionalDriver = driverRepository.findById(id);
-        return optionalDriver.orElse(null);
+        String key = "driver:" + id;
+        Driver cachedDriver = (Driver) redisTemplate.opsForValue().get(key);
+        if (cachedDriver != null) {
+            return cachedDriver; // Return from cache
+        }else{
+            Optional<Driver> optionalDriver = driverRepository.findById(id);
+            if(optionalDriver.isPresent()){
+                redisTemplate.opsForValue().set(key, optionalDriver.get());
+            }
+            return optionalDriver.orElse(null);
+        }
     }
 
     @Override
@@ -62,6 +77,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public Driver updateDriverLocation(UpdateDriverLocationRequest request) {
         Driver driver = getDriverById(request.driverId());
+       
         if (driver == null) {
             throw new DriverUpdateException("Driver not found with ID: " + request.driverId());
         }
@@ -82,8 +98,15 @@ public class DriverServiceImpl implements DriverService {
         }
     }
 
+    
     public Driver updateDriver(Driver driverRequest) {
-        Driver driver = getDriverById(driverRequest.getId());
+        String key = "driver:" + driverRequest.getId();
+        Driver driver = (Driver) redisTemplate.opsForValue().get(key);
+        if (driver != null) {
+            return driver; // Return from cache
+        }{
+             driver = getDriverById(driverRequest.getId());
+        }
         if (driver == null) {
             throw new DriverUpdateException("Driver not found with ID: " + driverRequest.getId());
         }
