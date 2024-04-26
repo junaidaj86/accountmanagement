@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
@@ -18,10 +17,11 @@ import jakarta.persistence.Table;
 @Table(name = "driver")
 public class Driver implements Serializable{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String id;
     private String name;
+    @Column(unique = true)
     private String email;
+    @Column(unique = true)
     private String phoneNumber;
     private Date createdAt;
     @OneToMany(mappedBy = "driver", cascade = CascadeType.PERSIST)
@@ -29,12 +29,13 @@ public class Driver implements Serializable{
     private Double currentLatitude;
     private Double currentLongitude;
     private String segmentId;
+    private int shardId;
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -107,16 +108,25 @@ public class Driver implements Serializable{
         this.segmentId = segmentId;
     }
 
+    public int getShardId() {
+        return shardId;
+    }
+
+    public void setShardId(int shardId) {
+        this.shardId = shardId;
+    }
+
     @Override
     public String toString() {
         return "Driver [id=" + id + ", name=" + name + ", email=" + email + ", phoneNumber=" + phoneNumber
                 + ", createdAt=" + createdAt + ", cabs=" + cabs + ", currentLatitude=" + currentLatitude
-                + ", currentLongitude=" + currentLongitude + ", segmentId=" + segmentId + ", getId()=" + getId()
-                + ", getName()=" + getName() + ", getEmail()=" + getEmail() + ", getPhoneNumber()=" + getPhoneNumber()
-                + ", getCreatedAt()=" + getCreatedAt() + ", getCabs()=" + getCabs() + ", getCurrentLatitude()="
-                + getCurrentLatitude() + ", getCurrentLongitude()=" + getCurrentLongitude() + ", getSegmentId()="
-                + getSegmentId() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
-                + super.toString() + "]";
+                + ", currentLongitude=" + currentLongitude + ", segmentId=" + segmentId + ", shardId=" + shardId
+                + ", getId()=" + getId() + ", getName()=" + getName() + ", getEmail()=" + getEmail()
+                + ", getPhoneNumber()=" + getPhoneNumber() + ", getCreatedAt()=" + getCreatedAt() + ", getCabs()="
+                + getCabs() + ", getCurrentLatitude()=" + getCurrentLatitude() + ", getCurrentLongitude()="
+                + getCurrentLongitude() + ", getSegmentId()=" + getSegmentId() + ", getShardId()=" + getShardId()
+                + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
+                + "]";
     }
 
     

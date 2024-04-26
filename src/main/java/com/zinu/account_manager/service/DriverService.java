@@ -7,9 +7,9 @@ import com.zinu.account_manager.model.Driver;
 
 public interface DriverService {
     Driver saveDriver(Driver driver);
-    Driver getDriverById(Long id);
+    Driver getDriverById(String id);
     List<Driver> getAllDrivers();
-    void deleteDriverById(Long id);
+    void deleteDriverById(String id);
     Driver updateDriver(Driver driver);
     public Driver updateDriverLocation(UpdateDriverLocationRequest request);
 }

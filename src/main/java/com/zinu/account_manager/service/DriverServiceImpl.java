@@ -8,12 +8,14 @@ import org.springframework.stereotype.Service;
 import com.zinu.account_manager.DTO.GeoHashRequest;
 import com.zinu.account_manager.DTO.GeoHashResponse;
 import com.zinu.account_manager.DTO.UpdateDriverLocationRequest;
+import com.zinu.account_manager.configurations.ShardStrategy;
 import com.zinu.account_manager.exception.DriverUpdateException;
 import com.zinu.account_manager.exception.EmptyResponseException;
 import com.zinu.account_manager.model.Driver;
 import com.zinu.account_manager.repository.DriverRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class DriverServiceImpl implements DriverService {
@@ -42,15 +44,23 @@ public class DriverServiceImpl implements DriverService {
     @Value("${geohash.precision}")
     private int precision;
 
+    public List<Driver> getAllDriversByShard(int shardKey) {
+        return driverRepository.findAllByShardId(shardKey);
+    }
+
     @Override
     public Driver saveDriver(Driver driver) {
+        UUID uuid = UUID.randomUUID();
+        driver.setId(uuid.toString());
+        int shardId = ShardStrategy.calculateShard(driver.getId());
+        driver.setShardId(shardId);
         String key = "driver:" + driver.getId();
         redisTemplate.opsForValue().set(key, driver);
         return driverRepository.save(driver);
     }
 
     @Override
-    public Driver getDriverById(Long id) {
+    public Driver getDriverById(String id) {
         String key = "driver:" + id;
         Driver cachedDriver = (Driver) redisTemplate.opsForValue().get(key);
         if (cachedDriver != null) {
@@ -70,7 +80,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public void deleteDriverById(Long id) {
+    public void deleteDriverById(String id) {
         driverRepository.deleteById(id);
     }
 
