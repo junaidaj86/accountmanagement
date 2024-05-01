@@ -2,7 +2,6 @@ package com.zinu.account_manager.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.zinu.account_manager.DTO.GeoHashRequest;
@@ -15,7 +14,6 @@ import com.zinu.account_manager.exception.EmptyResponseException;
 import com.zinu.account_manager.model.Driver;
 import com.zinu.account_manager.repository.DriverRepository;
 
-import feign.FeignException;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,25 +26,16 @@ public class DriverServiceImpl implements DriverService {
 
     private KafkaService kafkaService;
 
-    private RestService restService;
-
     private RedisTemplate<String, Object> redisTemplate;
 
     private DriverClient client;
 
-    public DriverServiceImpl(DriverRepository driverRepository, KafkaService kafkaService, RestService restService, RedisTemplate<String, Object> redisTemplate, DriverClient client) {
+    public DriverServiceImpl(DriverRepository driverRepository, KafkaService kafkaService, RedisTemplate<String, Object> redisTemplate, DriverClient client) {
         this.driverRepository = driverRepository;
         this.kafkaService = kafkaService;
-        this.restService = restService;
         this.redisTemplate = redisTemplate;
         this.client = client;
     }
-
-    @Value("${geohash.service.uri}")
-    private String geoHashServiceUri;
-
-    @Value("${geohash.servicename.name}")
-    private String geohashServiceName;
 
     @Value("${kafka.geohash.topic.name}")
     private String heoHashTopic;
@@ -101,17 +90,15 @@ public class DriverServiceImpl implements DriverService {
         if (driver == null) {
             throw new DriverUpdateException("Driver not found with ID: " + request.driverId());
         }
-        GeoHashRequest geoHashRequest = new GeoHashRequest(request.latitude(), request.longitude(), precision);
-        ResponseEntity<GeoHashResponse> response = restService.callSyncRestCall(geohashServiceName, geoHashServiceUri, geoHashRequest,
-                GeoHashResponse.class);     
-       
-        if (response != null && response.getBody()!= null) {
+        GeoHashRequest geoHashRequest = new GeoHashRequest(request.latitude(), request.longitude(), precision);   
+        GeoHashResponse response = client.getGeoHash(geoHashRequest);
+        if (response != null && response.segment()!= null) {
             UpdateDriverLocationRequest kafkaRequest = new UpdateDriverLocationRequest(request.driverId(),
-            request.latitude(), request.longitude(), response.getBody().segment());
+            request.latitude(), request.longitude(), response.segment());
             kafkaService.send(heoHashTopic, kafkaRequest);
             driver.setCurrentLatitude(request.latitude());
             driver.setCurrentLongitude(request.longitude());
-            driver.setSegmentId(response.getBody().segment());
+            driver.setSegmentId(response.segment());
             driverRepository.save(driver);
             return driver;
         } else {
