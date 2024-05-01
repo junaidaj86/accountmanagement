@@ -6,6 +6,10 @@
 		{
 			"name": "geohash",
 			"path": "../geohash"
+		},
+		{
+			"name": "service-registry",
+			"path": "../../../../../../service-registry/service-registry"
 		}
 	],
 	"settings": {
