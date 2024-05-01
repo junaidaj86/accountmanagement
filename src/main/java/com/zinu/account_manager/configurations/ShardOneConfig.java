@@ -1,12 +1,9 @@
 package com.zinu.account_manager.configurations;
 
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
 
 @Configuration
 @Component
