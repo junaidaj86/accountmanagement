@@ -54,6 +54,7 @@ public class DriverController {
 
     @GetMapping
     public ResponseEntity<List<Driver>> getAllDrivers() {
+        TenantContext.setCurrentTenant(2);
         List<Driver> drivers = driverService.getAllDrivers();
         return new ResponseEntity<>(drivers, HttpStatus.OK);
     }

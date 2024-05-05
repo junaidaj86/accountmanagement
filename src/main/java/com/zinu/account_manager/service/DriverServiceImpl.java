@@ -9,12 +9,13 @@ import com.zinu.account_manager.DTO.GeoHashResponse;
 import com.zinu.account_manager.DTO.UpdateDriverLocationRequest;
 import com.zinu.account_manager.clients.DriverClient;
 import com.zinu.account_manager.configurations.ShardStrategy;
+import com.zinu.account_manager.configurations.TenantContext;
 import com.zinu.account_manager.exception.DriverUpdateException;
 import com.zinu.account_manager.exception.EmptyResponseException;
 import com.zinu.account_manager.model.Driver;
 import com.zinu.account_manager.repository.DriverRepository;
 
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -75,7 +76,21 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public List<Driver> getAllDrivers() {
-        return driverRepository.findAll();
+        List<Driver> allDrivers = new ArrayList<>();
+
+        List<Driver> driversFromShard = driverRepository.findAll();
+
+        TenantContext.setCurrentTenant(1);
+        List<Driver> driversFromShard1 = driverRepository.findAll();
+
+        TenantContext.setCurrentTenant(2);
+        List<Driver> driversFromShard2 = driverRepository.findAll();
+
+
+        allDrivers.addAll(driversFromShard);
+        allDrivers.addAll(driversFromShard2);
+        allDrivers.addAll(driversFromShard1);
+        return allDrivers;
     }
 
     @Override
