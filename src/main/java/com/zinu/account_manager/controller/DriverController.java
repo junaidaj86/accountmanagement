@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zinu.account_manager.DTO.DriverRequest;
 import com.zinu.account_manager.DTO.UpdateDriverLocationRequest;
 import com.zinu.account_manager.configurations.ShardStrategy;
 import com.zinu.account_manager.configurations.TenantContext;
@@ -54,9 +55,15 @@ public class DriverController {
 
     @GetMapping
     public ResponseEntity<List<Driver>> getAllDrivers() {
-        TenantContext.setCurrentTenant(2);
         List<Driver> drivers = driverService.getAllDrivers();
         return new ResponseEntity<>(drivers, HttpStatus.OK);
+    }
+
+    @GetMapping("/getDriver/{shardId}")
+    public List<Driver> getDriverForShard(@PathVariable int shardId) {
+        TenantContext.setCurrentTenant(shardId); // Set context for this specific shard
+        System.out.println(TenantContext.getCurrentTenant());
+        return driverService.getDriversByShardId();
     }
 
     @DeleteMapping("/{id}")

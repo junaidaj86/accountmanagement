@@ -2,8 +2,12 @@ package com.zinu.account_manager.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.zinu.account_manager.DTO.DriverRequest;
+import com.zinu.account_manager.DTO.DriverResponse;
 import com.zinu.account_manager.DTO.GeoHashRequest;
 import com.zinu.account_manager.DTO.GeoHashResponse;
 import com.zinu.account_manager.DTO.UpdateDriverLocationRequest;
@@ -30,12 +34,15 @@ public class DriverServiceImpl implements DriverService {
     private RedisTemplate<String, Object> redisTemplate;
 
     private DriverClient client;
+    private RestService restService;
 
-    public DriverServiceImpl(DriverRepository driverRepository, KafkaService kafkaService, RedisTemplate<String, Object> redisTemplate, DriverClient client) {
+    public DriverServiceImpl(DriverRepository driverRepository, KafkaService kafkaService,
+            RedisTemplate<String, Object> redisTemplate, DriverClient client, RestService restService) {
         this.driverRepository = driverRepository;
         this.kafkaService = kafkaService;
         this.redisTemplate = redisTemplate;
         this.client = client;
+        this.restService = restService;
     }
 
     @Value("${kafka.geohash.topic.name}")
@@ -65,9 +72,9 @@ public class DriverServiceImpl implements DriverService {
         Driver cachedDriver = (Driver) redisTemplate.opsForValue().get(key);
         if (cachedDriver != null) {
             return cachedDriver; // Return from cache
-        }else{
+        } else {
             Optional<Driver> optionalDriver = driverRepository.findById(id);
-            if(optionalDriver.isPresent()){
+            if (optionalDriver.isPresent()) {
                 redisTemplate.opsForValue().set(key, optionalDriver.get());
             }
             return optionalDriver.orElse(null);
@@ -76,23 +83,21 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public List<Driver> getAllDrivers() {
-        List<Driver> allDrivers = new ArrayList<>();
-
-        List<Driver> driversFromShard = driverRepository.findAll();
-
-        TenantContext.setCurrentTenant(1);
-        List<Driver> driversFromShard1 = driverRepository.findAll();
-
-        TenantContext.setCurrentTenant(2);
-        List<Driver> driversFromShard2 = driverRepository.findAll();
-
-
-        allDrivers.addAll(driversFromShard);
-        allDrivers.addAll(driversFromShard2);
-        allDrivers.addAll(driversFromShard1);
-        return allDrivers;
+        List<Driver> drivers = new ArrayList<>();
+        for(int i= 0; i< 3; i++){
+            ResponseEntity<List<Driver>> response = restService.callSyncRestGet("http://localhost:8080/drivers/getDriver/" +i);
+            drivers.addAll(response.getBody());
+            System.out.println("finished");
+        }
+        return drivers;
     }
 
+    @Override
+    public List<Driver> getDriversByShardId() {
+        List<Driver> drivers = driverRepository.findAll();
+        TenantContext.clear();
+        return drivers;
+    }
     @Override
     public void deleteDriverById(String id) {
         driverRepository.deleteById(id);
@@ -101,15 +106,15 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public Driver updateDriverLocation(UpdateDriverLocationRequest request) {
         Driver driver = getDriverById(request.driverId());
-       
+
         if (driver == null) {
             throw new DriverUpdateException("Driver not found with ID: " + request.driverId());
         }
-        GeoHashRequest geoHashRequest = new GeoHashRequest(request.latitude(), request.longitude(), precision);   
+        GeoHashRequest geoHashRequest = new GeoHashRequest(request.latitude(), request.longitude(), precision);
         GeoHashResponse response = client.getGeoHash(geoHashRequest);
-        if (response != null && response.segment()!= null) {
+        if (response != null && response.segment() != null) {
             UpdateDriverLocationRequest kafkaRequest = new UpdateDriverLocationRequest(request.driverId(),
-            request.latitude(), request.longitude(), response.segment());
+                    request.latitude(), request.longitude(), response.segment());
             kafkaService.send(heoHashTopic, kafkaRequest);
             driver.setCurrentLatitude(request.latitude());
             driver.setCurrentLongitude(request.longitude());
@@ -121,14 +126,14 @@ public class DriverServiceImpl implements DriverService {
         }
     }
 
-    
     public Driver updateDriver(Driver driverRequest) {
         String key = "driver:" + driverRequest.getId();
         Driver driver = (Driver) redisTemplate.opsForValue().get(key);
         if (driver != null) {
             return driver; // Return from cache
-        }{
-             driver = getDriverById(driverRequest.getId());
+        }
+        {
+            driver = getDriverById(driverRequest.getId());
         }
         if (driver == null) {
             throw new DriverUpdateException("Driver not found with ID: " + driverRequest.getId());

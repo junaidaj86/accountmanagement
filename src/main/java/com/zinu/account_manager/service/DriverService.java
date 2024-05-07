@@ -12,4 +12,5 @@ public interface DriverService {
     void deleteDriverById(String id);
     Driver updateDriver(Driver driver);
     public Driver updateDriverLocation(UpdateDriverLocationRequest request);
+    public List<Driver> getDriversByShardId();
 }

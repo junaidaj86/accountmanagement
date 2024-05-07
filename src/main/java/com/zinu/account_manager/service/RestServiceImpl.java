@@ -1,19 +1,19 @@
 package com.zinu.account_manager.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
+
+import java.util.List;
+
+import org.apache.kafka.common.metrics.stats.Rate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
+
+import com.zinu.account_manager.model.Driver;
 
 @Service
 public class RestServiceImpl implements RestService {
-
-    @Autowired
-    private LoadBalancerClient loadBalancerClient;
 
     
     public <T> ResponseEntity<T> callSyncRestCall(String uri, Object paylaod, Class<T> responseType) {
@@ -28,22 +28,19 @@ public class RestServiceImpl implements RestService {
         return response;
     }
 
-    @Override
-     public <T> ResponseEntity<T> callSyncRestCall(String serviceName, String uri, Object payload, Class<T> responseType) {
-        // Get an instance of the specified service using LoadBalancerClient
-        ServiceInstance serviceInstance = loadBalancerClient.choose(serviceName);
-
-        // Build the URL using the service instance details
-        String url = serviceInstance.getUri().toString() + uri;
-
-        // Create RestTemplate
-        RestTemplate restTemplate = new RestTemplate();
-
-        // Make the REST call
-        ResponseEntity<T> response = restTemplate
-                .postForEntity(url, payload, responseType);
-
+    public  ResponseEntity<List<Driver>> callSyncRestGet(String uri) {
+        RestClient restClient = RestClient.create();
+        ResponseEntity<List<Driver>> response = restClient
+                .get()
+                .uri(uri)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .toEntity(new ParameterizedTypeReference<List<Driver>>() {});
         return response;
     }
+
+   
+
+  
 
 }
