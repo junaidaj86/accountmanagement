@@ -12,14 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zinu.account_manager.DTO.UpdateDriverLocationRequest;
-import com.zinu.account_manager.configurations.ShardStrategy;
 import com.zinu.account_manager.configurations.TenantContext;
 import com.zinu.account_manager.model.Driver;
 import com.zinu.account_manager.service.DriverService;
 import com.zinu.account_manager.service.KafkaService;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/drivers")
@@ -33,11 +31,11 @@ public class DriverController {
 
     @PostMapping
     public ResponseEntity<Driver> createDriver(@RequestBody Driver driver) {
-        UUID uuid = UUID.randomUUID();
-        driver.setId(uuid.toString());
-        int shardId = ShardStrategy.calculateShard(driver.getId());
-        TenantContext.setCurrentTenant(shardId);
-        driver.setShardId(shardId);
+        // UUID uuid = UUID.randomUUID();
+        // driver.setId(uuid.toString());
+        // int shardId = ShardStrategy.calculateShard(driver.getId());
+        // TenantContext.setCurrentTenant(shardId);
+        // driver.setShardId(shardId);
         Driver savedDriver = driverService.saveDriver(driver);
         return new ResponseEntity<>(savedDriver, HttpStatus.CREATED);
     }

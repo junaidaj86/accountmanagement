@@ -57,6 +57,7 @@ public class DriverServiceImpl implements DriverService {
         driver.setId(uuid.toString());
         int shardId = ShardStrategy.calculateShard(driver.getId());
         driver.setShardId(shardId);
+        TenantContext.setCurrentTenant(shardId);
         String key = "driver:" + driver.getId();
         redisTemplate.opsForValue().set(key, driver);
         return driverRepository.save(driver);
