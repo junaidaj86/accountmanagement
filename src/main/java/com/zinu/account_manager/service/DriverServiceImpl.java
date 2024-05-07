@@ -4,10 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import com.zinu.account_manager.DTO.DriverRequest;
-import com.zinu.account_manager.DTO.DriverResponse;
 import com.zinu.account_manager.DTO.GeoHashRequest;
 import com.zinu.account_manager.DTO.GeoHashResponse;
 import com.zinu.account_manager.DTO.UpdateDriverLocationRequest;
@@ -81,16 +77,32 @@ public class DriverServiceImpl implements DriverService {
         }
     }
 
-    @Override
     public List<Driver> getAllDrivers() {
         List<Driver> drivers = new ArrayList<>();
-        for(int i= 0; i< 3; i++){
-            ResponseEntity<List<Driver>> response = restService.callSyncRestGet("http://localhost:8080/drivers/getDriver/" +i);
-            drivers.addAll(response.getBody());
-            System.out.println("finished");
+        List<Thread> threads = new ArrayList<>();
+        
+        for(int i = 0; i < 3; i++) {
+            final int index = i;
+            Thread thread = new Thread(() -> {
+                ResponseEntity<List<Driver>> response = restService.callSyncRestGet("http://localhost:8080/drivers/getDriver/" + index);
+                drivers.addAll(response.getBody());
+            });
+            threads.add(thread);
+            thread.start();
         }
+        
+        // Wait for all threads to finish
+        for(Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        
         return drivers;
     }
+    
 
     @Override
     public List<Driver> getDriversByShardId() {

@@ -3,7 +3,6 @@ package com.zinu.account_manager.service;
 
 import java.util.List;
 
-import org.apache.kafka.common.metrics.stats.Rate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

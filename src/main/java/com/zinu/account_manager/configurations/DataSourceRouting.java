@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.stereotype.Component;
