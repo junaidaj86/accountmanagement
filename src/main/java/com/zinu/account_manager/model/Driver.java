@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,6 +27,7 @@ public class Driver implements Serializable{
     private String phoneNumber;
     private Date createdAt;
     @OneToMany(mappedBy = "driver", cascade = CascadeType.PERSIST)
+    @JsonManagedReference
     private List<Cab> cabs = new ArrayList<>();
     private Double currentLatitude;
     private Double currentLongitude;

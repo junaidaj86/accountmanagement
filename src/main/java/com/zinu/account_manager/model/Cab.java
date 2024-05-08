@@ -1,5 +1,7 @@
 package com.zinu.account_manager.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,6 +22,7 @@ public class Cab {
     private CarType carType;
     private String registrationNumber;
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
