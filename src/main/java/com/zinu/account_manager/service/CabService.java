@@ -10,4 +10,5 @@ public interface CabService {
     Cab getCabById(Long id);
     List<Cab> getAllCabs();
     void deleteCabById(Long id);
+    public List<Cab> getCabsByDriverId(String driverId);
 }

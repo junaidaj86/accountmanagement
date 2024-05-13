@@ -10,6 +10,10 @@
 		{
 			"name": "service-registry",
 			"path": "../../../../../../service-registry/service-registry"
+		},
+		{
+			"name": "config-server",
+			"path": "../config-server"
 		}
 	],
 	"settings": {

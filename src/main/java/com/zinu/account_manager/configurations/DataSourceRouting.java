@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +18,7 @@ public class DataSourceRouting extends AbstractRoutingDataSource {
 	private ShardOneConfig shardOneConfig;
 	private ShardTwoConfig shardTwoConfig;
 	Map<Object, Object> dataSourceMap = new HashMap<>();
+		
 
 	public DataSourceRouting(ShardZeroConfig shardZeroConfig,
 			ShardOneConfig shardOneConfig, ShardTwoConfig shardTwoConfig) throws SQLException {
@@ -26,6 +26,7 @@ public class DataSourceRouting extends AbstractRoutingDataSource {
 		this.shardOneConfig = shardOneConfig;
 		this.shardTwoConfig = shardTwoConfig;
 
+	
 
 		DataSource dataSource = DataSourceBuilder.create()
 				.url(shardZeroConfig.getUrl())
@@ -73,28 +74,5 @@ public class DataSourceRouting extends AbstractRoutingDataSource {
 		return TenantContext.getCurrentTenant();
 	}
 
-	public DataSource shardZeroDataSource() {
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setUrl(shardZeroConfig.getUrl());
-		dataSource.setUsername(shardZeroConfig.getUsername());
-		dataSource.setPassword(shardZeroConfig.getPassword());
-		return dataSource;
-	}
-
-	public DataSource shardOneDataSource() {
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setUrl(shardOneConfig.getUrl());
-		dataSource.setUsername(shardOneConfig.getUsername());
-		dataSource.setPassword(shardOneConfig.getPassword());
-		return dataSource;
-	}
-
-	public DataSource shardTwoDataSource() {
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setUrl(shardTwoConfig.getUrl());
-		dataSource.setUsername(shardTwoConfig.getUsername());
-		dataSource.setPassword(shardTwoConfig.getPassword());
-		return dataSource;
-	}
 
 }

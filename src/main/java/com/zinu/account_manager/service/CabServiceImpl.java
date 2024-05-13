@@ -76,5 +76,10 @@ public class CabServiceImpl implements CabService {
     public void deleteCabById(Long id) {
         cabRepository.deleteById(id);
     }
+
+    @Override
+    public List<Cab> getCabsByDriverId(String driverId) {
+        return cabRepository.findByDriverId(driverId);
+    }
 }
 
