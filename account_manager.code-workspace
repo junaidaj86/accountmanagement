@@ -14,6 +14,10 @@
 		{
 			"name": "config-server",
 			"path": "../config-server"
+		},
+		{
+			"name": "gateway",
+			"path": "../gateway"
 		}
 	],
 	"settings": {
