@@ -3,6 +3,8 @@ kind: Component
 metadata:
   name: accountmanagement
   description: A description of your account management repository.
+  annotations:
+    backstage.io/kubernetes-id: my-app
 spec:
   type: service
   lifecycle: production
