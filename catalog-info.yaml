@@ -2,7 +2,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: accountmanagement
-  description: A description of your repository
+  description: A description of your account management repository.
 spec:
   type: service
   lifecycle: production
