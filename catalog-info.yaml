@@ -1,7 +1,7 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: accountmanagement
+  name: nginx
   description: A description of your account management repository.
   annotations:
     backstage.io/kubernetes-id: nginx
