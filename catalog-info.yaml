@@ -3,6 +3,10 @@ kind: Component
 metadata:
   name: nginx
   description: A description of your account management repository.
+  tags:
+    - production
+    - kubernetes
+    - backend
   annotations:
     backstage.io/kubernetes-id: nginx
 spec:
