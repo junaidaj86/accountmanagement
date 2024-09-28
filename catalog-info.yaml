@@ -10,6 +10,7 @@ metadata:
   annotations:
     backstage.io/kubernetes-id: nginx
     kafka.apache.org/consumer-groups: localhost/my-consumer-group,localhost/my-consumer-group2
+    github.com/project-slug: 'backstage/backstage'
 spec:
   type: service
   lifecycle: production
