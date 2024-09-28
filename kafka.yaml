@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: kafka
+  description: My Kafka Service in Backstage
+  annotations:
+    kafka.apache.org/consumer-groups: localhost/my-consumer-group
+spec:
+  type: service
+  lifecycle: production
+  owner: junaidaj86
