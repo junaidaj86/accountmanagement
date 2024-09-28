@@ -4,7 +4,7 @@ metadata:
   name: kafka
   description: My Kafka Service in Backstage
   annotations:
-    kafka.apache.org/consumer-groups: localhost/my-consumer-group
+    kafka.apache.org/consumer-groups: localhost/my-consumer-group,localhost/my-consumer-group2
 spec:
   type: service
   lifecycle: production
