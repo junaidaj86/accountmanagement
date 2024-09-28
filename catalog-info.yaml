@@ -9,7 +9,7 @@ metadata:
     - backend
   annotations:
     backstage.io/kubernetes-id: nginx
-    kafka.apache.org/consumer-groups: localhost/my-consumer-group
+    kafka.apache.org/consumer-groups: localhost/my-consumer-group,localhost/my-consumer-group2
 spec:
   type: service
   lifecycle: production
