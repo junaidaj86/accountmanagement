@@ -1,12 +1,19 @@
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: artist-api
-  description: Retrieve artist details
+  name: artist-api  # Name of the API
+  description: Retrieve artist details  # Short description of what this API does
+  tags:
+    - artists
+    - music
+    - public-api
+  annotations:
+    documentation: https://example.com/api-docs/artist-api  # URL to detailed API documentation
+    external-website: https://example.com/artist-api  # Public-facing URL (if any)
 spec:
-  type: openapi
-  lifecycle: production
-  owner: artist-relations-team
-  system: artist-engagement-portal
+  type: openapi  # Type of API (Swagger/OpenAPI)
+  lifecycle: production  # The stage of the API (development, production, deprecated, etc.)
+  owner: artist-relations-team  # The team responsible for the API
+  system: artist-engagement-portal  # The system or service this API belongs to
   definition: 
     $text: 'https://gist.githubusercontent.com/lenage/08964335de9064540c8c335fb849c5da/raw/6d63e3546897356882ed7e30cd48891a24e2b354/feature.swagger.json'
